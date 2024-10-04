@@ -1,0 +1,4 @@
+{
+  "player": "Daniel",
+  "bidding": { "dealer": { "1c": "3+", "1d": "4+ except 4-4-3-2" } }
+}

@@ -13,9 +13,8 @@ app.use(cors());
 app.get("/api/listing", async (req, res) => {
   try {
     const listing = await db.getAllListings();
-    console.log(listing);
+
     if (listing) {
-      console.log("sent json");
       res.status(200).json(listing);
     } else {
       console.log("data note found");
@@ -30,8 +29,21 @@ app.get("/api/listing", async (req, res) => {
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "test.json"));
 });
+/////////////////////////////////////////////////////
 
-db.initialize(process.env.MONGODB_CONN_STRING).then((data) => {
+app.get("/test", async (req, res) => {
+  try {
+    const templist = [{ bid: "1c" }];
+    let testingTemp = await db.getCurrentObject(templist, "Daniel");
+
+    console.log("testing:", testingTemp); ///////////////////
+    res.json(templist);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+
+db.initialize(process.env.MONGODB_CONN_STRING).then(() => {
   app.listen(3000, () => {
     console.log("Server is running on port 3000");
   });

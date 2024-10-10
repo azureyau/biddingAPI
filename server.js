@@ -37,7 +37,7 @@ app.get("/test", async (req, res) => {
     let testingTemp = await db.getCurrentObject(templist, "Daniel");
 
     console.log("testing:", testingTemp); ///////////////////
-    res.json(templist);
+    res.json(testingTemp);
   } catch (error) {
     res.json({ message: error });
   }

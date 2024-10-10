@@ -39,15 +39,13 @@ module.exports = class BiddingDB {
         }
 
         function findResponseByName(responses, auctionList, currentIndex) {
-          // If we've processed all auctions, return null
           if (currentIndex >= auctionList.length) {
-            return null;
+            return responses;
           }
 
-          const currentAuction = auctionList[currentIndex]; // Get the current auction
-          let foundResponse = null; // Variable to store found response
+          const currentAuction = auctionList[currentIndex];
+          let foundResponse = null;
 
-          // Iterate through the current responses
           for (const resp of responses) {
             console.log(
               "resp.bid === currentAuction.bid",
@@ -55,14 +53,12 @@ module.exports = class BiddingDB {
               currentAuction.bid
             );
             if (resp.bid === currentAuction.bid) {
-              foundResponse = resp; // Store the found response
-              break; // Exit inner loop if found
+              foundResponse = resp;
+              break;
             }
           }
 
-          // If a response was found, check for nested responses
           if (foundResponse) {
-            // Check for nested responses and continue to the next auction
             if (foundResponse.response && foundResponse.response.length > 0) {
               return findResponseByName(
                 foundResponse.response,
@@ -70,11 +66,9 @@ module.exports = class BiddingDB {
                 currentIndex + 1
               );
             }
-            return foundResponse; // Return the found response if no nested responses
+            throw new Error(`no correspondence response found in system`);
           }
-
-          // If not found, return null and stop processing
-          return null; // No matching response found
+          return null;
         }
 
         // Call the updated function starting from the first auction
@@ -90,7 +84,7 @@ module.exports = class BiddingDB {
             )}`
           );
         }
-
+        console.log("start", matchingResponse, "--=");
         return matchingResponse; // Return the response object
       });
   }

@@ -5,6 +5,7 @@ const cors = require("cors");
 const dotenv = require("dotenv").config();
 const BiddingDB = require("./modules/biddingDB");
 const db = new BiddingDB();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -81,7 +82,7 @@ app.post("/api/listings/1", async (req, res) => {
 });
 
 db.initialize(process.env.MONGODB_CONN_STRING).then(() => {
-  app.listen(3000, () => {
+  app.listen(port, () => {
     console.log("Server is running on port 3000");
   });
 });

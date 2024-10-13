@@ -10,13 +10,30 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-app.get("/api/listings", async (req, res) => {
-  res.redirect("/api/listing");
+app.get("/api/listing", async (req, res) => {
+  res.redirect("/api/listings");
 });
 
-app.get("/api/listing", async (req, res) => {
+app.get("/api/listings", async (req, res) => {
   try {
     const listing = await db.getAllListings();
+
+    if (listing) {
+      res.status(200).json(listing);
+    } else {
+      console.log("data note found");
+      res.status(404).json({ message: "data not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+  //res.sendFile(path.join(__dirname, "test.json"));
+});
+
+app.get("/api/listing/:playerName", async (req, res) => {
+  try {
+    console.log(req.params.playerName);
+    const listing = await db.getListingByName(req.params.playerName);
 
     if (listing) {
       res.status(200).json(listing);

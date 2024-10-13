@@ -185,4 +185,8 @@ module.exports = class BiddingDB {
     let [result] = await this.Playerlist.find({}).exec();
     return result;
   }
+
+  async getListingByName(playerName) {
+    return this.Playerlist.findOne({ player: playerName }).exec();
+  }
 };

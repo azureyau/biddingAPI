@@ -7,8 +7,11 @@ const BiddingDB = require("./modules/biddingDB");
 const db = new BiddingDB();
 
 app.use(express.json());
-HTTP_PORT = 3000;
 app.use(cors());
+
+app.get("/api/listings", async (req, res) => {
+  res.redirect("/api/listing");
+});
 
 app.get("/api/listing", async (req, res) => {
   try {
@@ -33,13 +36,47 @@ app.get("/", async (req, res) => {
 
 app.get("/test", async (req, res) => {
   try {
-    const templist = [{ bid: "1c" }];
-    let testingTemp = await db.getCurrentObject(templist, "Daniel");
-
-    console.log("testing:", testingTemp); ///////////////////
-    res.json(testingTemp);
+    const templist = [{ bid: "1c" }, { bid: "1s" }, { bid: "3s" }];
+    // const templist = [{ bid: "1c" }, { bid: "1d" }, { bid: "1h" }];
+    const newBid = {
+      bid: "3n",
+      meaning: "asking for shortness",
+      author: "JY",
+      update_date: "13/Oct/2024",
+    };
+    let systemBid = await db.addNewResponse("Daniel", templist, newBid);
+    console.log(systemBid.matchedCount);
+    const listing = await db.getAllListings();
+    res.json(listing);
   } catch (error) {
-    res.json({ message: error });
+    console.log(error);
+    res.json({ message: error, error: "no test result" });
+  }
+});
+
+app.post("/api/listings", async (req, res) => {
+  try {
+    const listing = await db.addNewResponse(
+      req.body.playerName,
+      req.body.bidSequence,
+      req.body.newBid
+    );
+    res.status(201).json(listing);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/listings/1", async (req, res) => {
+  try {
+    const listing = await db.addNewResponse(
+      req.body.playerName,
+      req.body.bidSequence,
+      req.body.newBid
+    );
+    res.status(201).json(listing);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

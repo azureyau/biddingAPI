@@ -181,7 +181,8 @@ module.exports = class BiddingDB {
         throw err;
       });
   }
-  getAllListings() {
-    return this.Playerlist.find({}).exec();
+  async getAllListings() {
+    let [result] = await this.Playerlist.find({}).exec();
+    return result;
   }
 };

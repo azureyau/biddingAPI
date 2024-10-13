@@ -6,7 +6,7 @@ var ResponseSchema = new Schema({
   meaning: { type: String, required: true },
   author: { type: String, required: true },
   update_date: { type: String, required: true },
-  response: [],
+  response: [this],
 });
 
 ResponseSchema.response = ResponseSchema;

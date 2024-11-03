@@ -1,109 +1,117 @@
-const express = require("express");
-const path = require("path");
-const app = express();
-const cors = require("cors");
-const dotenv = require("dotenv").config();
-const BiddingDB = require("./modules/biddingDB");
-const db = new BiddingDB();
-const port = process.env.PORT || 3000;
+const express = require('express')
+const path = require('path')
+const app = express()
+const cors = require('cors')
+const dotenv = require('dotenv').config()
+const BiddingDB = require('./modules/biddingDB')
+const db = new BiddingDB()
+const port = process.env.PORT || 3000
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json())
+app.use(cors())
 
-app.get("/api/listing", async (req, res) => {
-  res.redirect("/api/listings");
-});
-
-app.get("/api/listings", async (req, res) => {
+app.put('/api/listings/:playerName', async (req, res) => {
   try {
-    const listing = await db.getAllListings();
+    const { playerName } = req.params
+    const { objID } = req.query
+    const updateData = req.body
 
-    if (listing) {
-      res.status(200).json(listing);
+    // Validate parameters
+    if (!objID) {
+      return res
+        .status(400)
+        .json({ message: 'objID is required as a query parameter.' })
+    }
+
+    // Verify that the playerName exists in the Biddinglist
+    if (!db.Biddinglist[playerName]) {
+      return res.status(404).json({ message: 'Player collection not found' })
+    }
+
+    // Use the specified collection and update the document by ID
+    const updatedBidding = await db.updateBid(playerName, objID, updateData)
+
+    if (updatedBidding) {
+      res.status(200).json(updatedBidding)
     } else {
-      console.log("data note found");
-      res.status(404).json({ message: "data not found" });
+      res.status(404).json({ message: 'Document not found' })
     }
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message })
   }
-  //res.sendFile(path.join(__dirname, "test.json"));
-});
+})
 
-app.get("/api/listing/:playerName", async (req, res) => {
+app.get('/api/listing/test/:objID', async (req, res) => {
   try {
-    console.log(req.params.playerName);
-    const listing = await db.getListingByName(req.params.playerName);
-
-    if (listing) {
-      res.status(200).json(listing);
+    console.log(req.params.objID)
+    const obj = await db.getBidByID('standard', req.params.objID)
+    if (obj) {
+      res.status(200).json(obj)
     } else {
-      console.log("data note found");
-      res.status(404).json({ message: "data not found" });
+      res.status(404).json({ message: 'data not found' })
     }
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error })
+  }
+})
+
+app.get('/api/listings/:playerName', async (req, res) => {
+  try {
+    console.log(req.params.playerName)
+    const { objID } = req.query
+    let listing
+    if (!objID) {
+      listing = await db.getStartBid(req.params.playerName)
+    } else {
+      listing = await db.getObjResponse(req.params.playerName, objID)
+    }
+
+    if (listing) {
+      res.status(200).json(listing)
+    } else {
+      console.log('data note found')
+      res.status(404).json({ message: 'data not found' })
+    }
+  } catch (error) {
+    res.status(500).json({ message: error })
   }
   //res.sendFile(path.join(__dirname, "test.json"));
-});
+})
 
-app.get("/", async (req, res) => {
-  res.sendFile(path.join(__dirname, "test.json"));
-});
+app.get('/', async (req, res) => {
+  res.sendFile(path.join(__dirname, 'test.json'))
+})
 /////////////////////////////////////////////////////
 
-app.get("/test", async (req, res) => {
+app.post('/api/listings/:playerName', async (req, res) => {
   try {
-    const templist = [{ bid: "1c" }, { bid: "1s" }, { bid: "3s" }];
-    // const templist = [{ bid: "1c" }, { bid: "1d" }, { bid: "1h" }];
-    const newBid = {
-      bid: "3n",
-      meaning: "asking for shortness",
-      author: "JY",
-      update_date: "13/Oct/2024",
-    };
-    let systemBid = await db.addNewResponse("Daniel", templist, newBid);
-    console.log(systemBid.matchedCount);
-    const listing = await db.getAllListings();
-    res.json(listing);
+    console.log(req.body)
+    const listing = await db.addNewResponse(req)
+    res.status(201).json(listing)
   } catch (error) {
-    console.log(error);
-    res.json({ message: error, error: "no test result" });
+    res.status(500).json({ message: error.message })
   }
-});
+})
 
-app.post("/api/listings", async (req, res) => {
+app.post('/api/listings/1', async (req, res) => {
   try {
     const listing = await db.addNewResponse(
       req.body.playerName,
       req.body.bidSequence,
       req.body.newBid
-    );
-    res.status(201).json(listing);
+    )
+    res.status(201).json(listing)
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message })
   }
-});
-
-app.post("/api/listings/1", async (req, res) => {
-  try {
-    const listing = await db.addNewResponse(
-      req.body.playerName,
-      req.body.bidSequence,
-      req.body.newBid
-    );
-    res.status(201).json(listing);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+})
 
 db.initialize(process.env.MONGODB_CONN_STRING).then(() => {
   app.listen(port, () => {
-    console.log("Server is running on port 3000");
-  });
-});
+    console.log('Server is running on port 3000')
+  })
+})
 
 app.use((req, res) => {
-  res.status(404).json({ message: "404: Page Not Found" });
-});
+  res.status(404).json({ message: '404: Page Not Found' })
+})

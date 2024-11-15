@@ -22,7 +22,7 @@ app.put('/api/listings/:playerName', async (req, res) => {
         .status(400)
         .json({ message: 'objID is required as a query parameter.' })
     }
-
+    console.log('put req:', req.body)
     // Verify that the playerName exists in the Biddinglist
     if (!db.Biddinglist[playerName]) {
       return res.status(404).json({ message: 'Player collection not found' })
@@ -30,7 +30,7 @@ app.put('/api/listings/:playerName', async (req, res) => {
 
     // Use the specified collection and update the document by ID
     const updatedBidding = await db.updateBid(playerName, objID, updateData)
-
+    console.log(updatedBidding)
     if (updatedBidding) {
       res.status(200).json(updatedBidding)
     } else {
@@ -57,7 +57,6 @@ app.get('/api/listing/test/:objID', async (req, res) => {
 
 app.get('/api/listings/:playerName', async (req, res) => {
   try {
-    console.log(req.params.playerName)
     const { objID } = req.query
     let listing
     if (!objID) {
@@ -75,13 +74,11 @@ app.get('/api/listings/:playerName', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error })
   }
-  //res.sendFile(path.join(__dirname, "test.json"));
 })
 
 app.get('/', async (req, res) => {
   res.sendFile(path.join(__dirname, 'test.json'))
 })
-/////////////////////////////////////////////////////
 
 app.post('/api/listings/:playerName', async (req, res) => {
   try {

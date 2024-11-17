@@ -41,8 +41,28 @@ let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
 
 passport.use(strategy)
 app.use(passport.initialize())
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000', ///to be removed
+      'https://bidding-3h5z.onrender.com',
+    ]
 
-app.use(cors())
+    // Allow requests with no origin (e.g., mobile apps or Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      if (this.req.method === 'GET') {
+        callback(null, true) // Allow GET requests
+      } else {
+        callback(new Error('Not allowed by CORS for this method'))
+      }
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  methods: ['POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 
 // app.post('/api/register', (req, res) => {

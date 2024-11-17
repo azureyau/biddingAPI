@@ -26,7 +26,6 @@ module.exports = class BiddingDB {
         this.Biddinglist['jacky'] = db.model('jackybiddings', BiddingSchema)
         this.Biddinglist['rani'] = db.model('ranibiddings', BiddingSchema)
         this.Biddinglist['test'] = db.model('testbiddings', BiddingSchema)
-        console.log(this.Biddinglist['standard'])
         resolve()
       })
     })

@@ -25,9 +25,6 @@ let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
   console.log('payload received', jwt_payload)
 
   if (jwt_payload) {
-    // The following will ensure that all routes using
-    // passport.authenticate have a req.user._id, req.user.userName, req.user.fullName & req.user.role values
-    // that matches the request payload data
     next(null, {
       _id: jwt_payload._id,
       userName: jwt_payload.userName,
@@ -44,26 +41,31 @@ app.use(passport.initialize())
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http://localhost:3000', ///to be removed
+      'http://localhost:3000', ///to be removed later
       'https://bidding-3h5z.onrender.com',
     ]
 
     // Allow requests with no origin (e.g., mobile apps or Postman)
     if (!origin || allowedOrigins.includes(origin)) {
-      if (this.req.method === 'GET') {
-        callback(null, true) // Allow GET requests
-      } else {
-        callback(new Error('Not allowed by CORS for this method'))
-      }
+      callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
     }
   },
-  methods: ['POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }
-app.use(cors(corsOptions))
-app.use(express.json())
+app.use((req, res, next) => {
+  if (req.method === 'GET') {
+    cors({
+      origin: corsOptions.origin,
+      methods: ['GET'],
+      allowedHeaders: corsOptions.allowedHeaders,
+    })(req, res, next)
+  } else {
+    cors(corsOptions)(req, res, next) // Apply CORS for non-GET requests
+  }
+})
 
 // app.post('/api/register', (req, res) => {
 //   userService

@@ -25,14 +25,15 @@ Retrieves bidding data for a specific player.
   - `objID` (optional): ID of the bidding response to retrieve.
 
 - **Responses:**
-  1. server states
-  - `200 OK`: Returns bidding data.
-  - `404 Not Found`: No data found.
-  - `500 Internal Server Error`: Server error.
-  2. without objID:
-    JSON of a list of bidding of "start bid"
-  3. with objID:
-    JSON of a list of bidding of "response bid" for the objectID
+   - server states
+        - `200 OK`: Returns bidding data.
+        - `404 Not Found`: No data found.
+        - `500 Internal Server Error`: Server error.
+   - response body
+      1. without objID:
+          - JSON of a list of bidding of "start bid"
+      1. with objID:
+          - JSON of a list of bidding of "response bid" for the objectID
 
 ---
 

@@ -41,7 +41,7 @@ app.use(passport.initialize())
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http://localhost:3000', ///to be removed later
+      //'http://localhost:3000', ///to be removed later
       'https://bidding-3h5z.onrender.com',
     ]
 

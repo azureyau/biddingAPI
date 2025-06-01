@@ -163,7 +163,7 @@ module.exports = class BiddingDB {
         console.log(lastbid.bidName)
         if (!lastbid.universal) {
           for (const responseID of lastbid.response) {
-            const responseBid = this.getBidByID(
+            const responseBid = await this.getBidByID(
               req.params.playerName,
               responseID
             )

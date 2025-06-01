@@ -162,8 +162,12 @@ module.exports = class BiddingDB {
         )
         console.log(lastbid.bidName)
         if (!lastbid.universal) {
-          for (const response of lastbid.response) {
-            if (response.bidName === req.body.bidName) {
+          for (const responseID of lastbid.response) {
+            const responseBid = this.getBidByID(
+              req.params.playerName,
+              responseID
+            )
+            if (responseBid.bidName === req.body.bidName) {
               throw new Error('this bid already exist!')
             }
           }

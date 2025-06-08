@@ -172,6 +172,10 @@ app.get('/', async (req, res) => {
   res.sendFile(path.join(__dirname, 'test.json'))
 })
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong')
+})
+
 app.post(
   '/api/listings/:playerName',
   passport.authenticate('jwt', { session: false }),

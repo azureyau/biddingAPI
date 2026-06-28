@@ -5,6 +5,7 @@ module.exports = class BiddingDB {
   constructor() {
     this.Biddinglist = {}
     this.Biddinglist['daniel'] = null
+    this.Biddinglist['danielfv'] = null
     this.Biddinglist['rani'] = null
     this.Biddinglist['jacky'] = null
     this.Biddinglist['standard'] = null
@@ -20,9 +21,13 @@ module.exports = class BiddingDB {
       db.once('open', () => {
         this.Biddinglist['standard'] = db.model(
           'standardbiddings',
-          BiddingSchema
+          BiddingSchema,
         )
         this.Biddinglist['daniel'] = db.model('danielbiddings', BiddingSchema)
+        this.Biddinglist['danielfv'] = db.model(
+          'danielfvbiddings',
+          BiddingSchema,
+        )
         this.Biddinglist['jacky'] = db.model('jackybiddings', BiddingSchema)
         this.Biddinglist['rani'] = db.model('ranibiddings', BiddingSchema)
         this.Biddinglist['test'] = db.model('testbiddings', BiddingSchema)
@@ -157,15 +162,14 @@ module.exports = class BiddingDB {
 
       let reversePreSeq = req.body.previous_seq.slice().reverse()
       for (const bidID of reversePreSeq) {
-        let lastbid = await this.Biddinglist[req.params.playerName].findById(
-          bidID
-        )
+        let lastbid =
+          await this.Biddinglist[req.params.playerName].findById(bidID)
         console.log(lastbid.bidName)
         if (!lastbid.universal) {
           for (const responseID of lastbid.response) {
             const responseBid = await this.getBidByID(
               req.params.playerName,
-              responseID
+              responseID,
             )
             if (responseBid.bidName === req.body.bidName) {
               throw new Error('this bid already exist!')
